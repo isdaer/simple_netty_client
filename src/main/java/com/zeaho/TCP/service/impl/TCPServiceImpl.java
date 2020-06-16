@@ -10,7 +10,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TCPServiceImpl implements TCPService {
 
     @Override
