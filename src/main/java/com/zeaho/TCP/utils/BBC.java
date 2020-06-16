@@ -1,4 +1,4 @@
-package com.zeaho.utils;
+package com.zeaho.TCP.utils;
 
 //BBC计算
 public class BBC {

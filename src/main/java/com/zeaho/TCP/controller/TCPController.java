@@ -1,4 +1,4 @@
-package com.zeaho.controller;
+package com.zeaho.TCP.controller;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
