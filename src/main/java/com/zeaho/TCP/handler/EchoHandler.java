@@ -1,20 +1,14 @@
 package com.zeaho.TCP.handler;
 
-import com.zeaho.TCP.domain.repo.OpenApiShhkMachineRepo;
 import com.zeaho.TCP.utils.BBC;
 import com.zeaho.TCP.utils.JointBytes;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 
 public class EchoHandler extends ChannelInboundHandlerAdapter {
-
-
-    @Autowired
-    private OpenApiShhkMachineRepo openApiShhkMachineRepo;
 
     //连接成功后发送消息
     @Override
