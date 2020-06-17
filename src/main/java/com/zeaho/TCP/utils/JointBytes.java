@@ -63,7 +63,7 @@ public class JointBytes {
         }
 
         String state = mdtr.getState();//状态
-        Float fuelVolume = mdtr.getFuelVolume();//油量
+        int fuelVolume = (int) mdtr.getFuelVolume();//油量
 
         //获取年月日时分秒
         int stateUpdateTs = mdtr.getStateUpdateTs();
@@ -109,20 +109,21 @@ public class JointBytes {
         //先拼接数据单元,再计算数据单元长度追加至总数据,再追加数据单元
         ArrayList<Byte> addBytes = new ArrayList<>();
         //数据采集时间
-        addBytes.add((byte) 20);//年
-        addBytes.add((byte) 6);//月
-        addBytes.add((byte) 3);//日
-        addBytes.add((byte) 12);//时
-        addBytes.add((byte) 0);//分
-        addBytes.add((byte) 0);//秒
+        addBytes.add((byte) year);//年
+        addBytes.add((byte) month);//月
+        addBytes.add((byte) day);//日
+        addBytes.add((byte) hour);//时
+        addBytes.add((byte) minute);//分
+        addBytes.add((byte) second);//秒
         //信息类型标志
+        //0x02国四及以上,0x87国三及以下
         addBytes.add((byte) 0x87);//国三及以下数据流
         //信息流水号
         addBytes.add((byte) 0);
         addBytes.add((byte) 1);
         /**------------信息体------------*/
         //油箱液位
-        addBytes.add((byte) 100);
+        addBytes.add((byte) fuelVolume);
         //定位状态
         addBytes.add((byte) 0);
         //精度
