@@ -1,9 +1,10 @@
-package com.zeaho.TCP.utils;
+package com.zeaho.TCP.domain.protocol;
 
 import com.zeaho.TCP.domain.model.MachineDataRealTime;
 import com.zeaho.TCP.domain.model.MachineLastLocation;
 import com.zeaho.TCP.domain.repo.MachineDataRealTimeRepo;
 import com.zeaho.TCP.domain.repo.MachineLastLocationRepo;
+import com.zeaho.TCP.utils.BytesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,13 +18,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-//核心业务工具类
+//核心业务协议类
 //返回ArrayList<Byte>类型的最终传入数据
-//工具类调用repo
 @Component
-public class JointBytes {
+public class TCPBytes {
 
-    private static JointBytes jointBytes;
+    private static TCPBytes tcpBytes;
 
     @Autowired
     private MachineDataRealTimeRepo machineDataRealTimeRepo;
@@ -31,17 +31,16 @@ public class JointBytes {
     @Autowired
     private MachineLastLocationRepo machineLastLocationRepo;
 
-
     @PostConstruct
     public void init() {
-        jointBytes = this;
-        jointBytes.machineDataRealTimeRepo = this.machineDataRealTimeRepo;
-        jointBytes.machineLastLocationRepo = this.machineLastLocationRepo;
+        tcpBytes = this;
+        tcpBytes.machineDataRealTimeRepo = this.machineDataRealTimeRepo;
+        tcpBytes.machineLastLocationRepo = this.machineLastLocationRepo;
     }
 
     public ArrayList<Byte> JointBytes(String machineCode, Long machineId) {
         ArrayList<Byte> bytes = new ArrayList<>();
-        MachineDataRealTime mdtr = jointBytes.machineDataRealTimeRepo.findByMachineId(machineId);
+        MachineDataRealTime mdtr = tcpBytes.machineDataRealTimeRepo.findByMachineId(machineId);
         if (mdtr == null) {//没有实时状态,不拼接
             return null;
         }
@@ -49,7 +48,7 @@ public class JointBytes {
         //起始符
         //固定
         String header = "##";
-        StringIntoBytes.intoBytes(bytes, header);
+        BytesUtil.stringIntoBytes(bytes, header);
 
         //命令单元
         //0x01:终端登入,0x02:实时信息上报,0x03:补发信息上报,0x04:终端登出,0x05:终端校时,0x06~0x7F:系统预留
@@ -58,11 +57,14 @@ public class JointBytes {
         //车辆识别号
         //不足17位左补足
         String cs = "";
-        for (int i = 0; i < 17 - machineCode.length(); i++) {
-            cs += "0";
+        int length = machineCode.length();
+        if (length < 17) {
+            for (int i = 0; i < 17 - length; i++) {
+                cs += "0";
+            }
+            machineCode = cs + machineCode;
         }
-        machineCode = cs + machineCode;
-        StringIntoBytes.intoBytes(bytes, machineCode);
+        BytesUtil.stringIntoBytes(bytes, machineCode);
 
         //终端软件版本号,有效范围0~255
         bytes.add((byte) 3);
@@ -109,8 +111,9 @@ public class JointBytes {
         int fuelPercentage = (int) mdtr.getFuelPercentage();//油量百分比
         addBytes.add((byte) fuelPercentage);
 
-        Boolean locationState = false;
-        MachineLastLocation mll = jointBytes.machineLastLocationRepo.findByMachineId(machineId);
+        //定位状态
+        boolean locationState = false;
+        MachineLastLocation mll = tcpBytes.machineLastLocationRepo.findByMachineId(machineId);
         if (mll != null) {
             locationState = true;
             Float longitude = (float) mll.getLongitude();//精度

@@ -1,7 +1,7 @@
 package com.zeaho.TCP.utils;
 
 //BBC计算
-public class BBC {
+public class BBCUtil {
     public static byte getXor(byte[] datas) {
 
         byte temp = datas[0];

@@ -1,7 +1,7 @@
 package com.zeaho.TCP.handler;
 
-import com.zeaho.TCP.utils.BBC;
-import com.zeaho.TCP.utils.JointBytes;
+import com.zeaho.TCP.domain.protocol.TCPBytes;
+import com.zeaho.TCP.utils.BBCUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -22,8 +22,8 @@ public class EchoHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
-        JointBytes jointBytes = new JointBytes();
-        ArrayList<Byte> bytes = jointBytes.JointBytes(machineCode, machineId);
+        TCPBytes tcpBytes = new TCPBytes();
+        ArrayList<Byte> bytes = tcpBytes.JointBytes(machineCode, machineId);
 
         if (bytes != null) {
             //结果转换
@@ -39,7 +39,7 @@ public class EchoHandler extends ChannelInboundHandlerAdapter {
             }
 
             //校验码
-            byte xor = BBC.getXor(xors);
+            byte xor = BBCUtil.getXor(xors);
             by[size] = xor;
             ctx.writeAndFlush(Unpooled.copiedBuffer(by));
         }
