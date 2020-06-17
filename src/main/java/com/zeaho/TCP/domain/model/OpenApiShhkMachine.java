@@ -1,7 +1,9 @@
 package com.zeaho.TCP.domain.model;
 
+import javax.persistence.Entity;
 import java.util.Date;
 
+@Entity
 public class OpenApiShhkMachine extends AbstractModel {
 
     private Date installAt;
