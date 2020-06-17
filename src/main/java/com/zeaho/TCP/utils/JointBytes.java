@@ -76,10 +76,13 @@ public class JointBytes {
         bytes.add((byte) 0x02);
 
         //车辆识别号
-        int length = machineCode.length();
-        if (length < 17) {
-            String str = String.format("%0" + (17 - length) + "d", machineCode);
+        //不足17位左补足
+        String cs = "";
+        for (int i = 0; i < 17 - machineCode.length(); i++) {
+            cs += "0";
         }
+
+        machineCode = cs + machineCode;
         StringIntoBytes.intoBytes(bytes, machineCode);
 
         //终端软件版本号,有效范围0~255
@@ -133,11 +136,6 @@ public class JointBytes {
             System.out.println("---------");
             locationState = true;
             Float longitude = (float) mll.getLongitude();//精度
-            byte[] bytes1 = ByteUtils.float2byte(longitude);
-            for (byte b : bytes1
-            ) {
-                System.out.println(b);
-            }
             Float latitude = (float) mll.getLatitude();//纬度
         }
         System.out.println("---------");
@@ -183,6 +181,7 @@ public class JointBytes {
         for (byte b : addBytes) {
             bytes.add(b);
         }
-        return bytes;
+        resultLists.add(bytes);
+        return resultLists;
     }
 }
