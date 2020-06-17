@@ -2,10 +2,8 @@ package com.zeaho.TCP.utils;
 
 import com.zeaho.TCP.domain.model.MachineDataRealTime;
 import com.zeaho.TCP.domain.model.MachineLastLocation;
-import com.zeaho.TCP.domain.model.OpenApiShhkMachine;
 import com.zeaho.TCP.domain.repo.MachineDataRealTimeRepo;
 import com.zeaho.TCP.domain.repo.MachineLastLocationRepo;
-import com.zeaho.TCP.domain.repo.OpenApiShhkMachineRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +23,7 @@ import java.util.List;
 @Component
 public class JointBytes {
 
-    @Autowired
-    private OpenApiShhkMachineRepo openApiShhkMachineRepo;
+    private static JointBytes jointBytes;
 
     @Autowired
     private MachineDataRealTimeRepo machineDataRealTimeRepo;
@@ -34,36 +31,19 @@ public class JointBytes {
     @Autowired
     private MachineLastLocationRepo machineLastLocationRepo;
 
-    private static JointBytes jointBytes;
 
     @PostConstruct
     public void init() {
         jointBytes = this;
-        jointBytes.openApiShhkMachineRepo = this.openApiShhkMachineRepo;
         jointBytes.machineDataRealTimeRepo = this.machineDataRealTimeRepo;
         jointBytes.machineLastLocationRepo = this.machineLastLocationRepo;
     }
 
-    public ArrayList<ArrayList<Byte>> JointBytes() {
-        ArrayList<ArrayList<Byte>> resultLists = new ArrayList<>();
-
-        List<OpenApiShhkMachine> list = jointBytes.openApiShhkMachineRepo.findAll();
-        for (OpenApiShhkMachine oasm : list) {
-            String machineCode = oasm.getMachineCode();
-            Long machineId = oasm.getMachineId();
-
-            if (!"".equals(machineCode) && machineCode != null && !"".equals(machineId) && machineId != null) {//设备编号和机械id不为空
-                resultLists = eachByte(resultLists, machineCode, machineId);
-            }
-        }
-        return resultLists;
-    }
-
-    private ArrayList<ArrayList<Byte>> eachByte(ArrayList<ArrayList<Byte>> resultLists, String machineCode, Long machineId) {
+    public ArrayList<Byte> JointBytes(String machineCode, Long machineId) {
         ArrayList<Byte> bytes = new ArrayList<>();
         MachineDataRealTime mdtr = jointBytes.machineDataRealTimeRepo.findByMachineId(machineId);
         if (mdtr == null) {//没有实时状态,不拼接
-            return resultLists;
+            return null;
         }
 
         //起始符
@@ -81,7 +61,6 @@ public class JointBytes {
         for (int i = 0; i < 17 - machineCode.length(); i++) {
             cs += "0";
         }
-
         machineCode = cs + machineCode;
         StringIntoBytes.intoBytes(bytes, machineCode);
 
@@ -133,12 +112,10 @@ public class JointBytes {
         Boolean locationState = false;
         MachineLastLocation mll = jointBytes.machineLastLocationRepo.findByMachineId(machineId);
         if (mll != null) {
-            System.out.println("---------");
             locationState = true;
             Float longitude = (float) mll.getLongitude();//精度
             Float latitude = (float) mll.getLatitude();//纬度
         }
-        System.out.println("---------");
         //定位状态
         addBytes.add((byte) 0);
 
@@ -181,7 +158,7 @@ public class JointBytes {
         for (byte b : addBytes) {
             bytes.add(b);
         }
-        resultLists.add(bytes);
-        return resultLists;
+
+        return bytes;
     }
 }

@@ -10,14 +10,22 @@ import java.util.ArrayList;
 
 public class EchoHandler extends ChannelInboundHandlerAdapter {
 
+    private String machineCode;
+    private Long machineId;
+
+    public EchoHandler(String machineCode, Long machineId) {
+        this.machineCode = machineCode;
+        this.machineId = machineId;
+    }
+
     //连接成功后发送消息
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
         JointBytes jointBytes = new JointBytes();
-        ArrayList<ArrayList<Byte>> arrayLists = jointBytes.JointBytes();
-        for (ArrayList<Byte> bytes : arrayLists) {
+        ArrayList<Byte> bytes = jointBytes.JointBytes(machineCode, machineId);
 
+        if (bytes != null) {
             //结果转换
             int size = bytes.size();
             byte[] by = new byte[size + 1];//多一位用于存储BBC
@@ -33,9 +41,7 @@ public class EchoHandler extends ChannelInboundHandlerAdapter {
             //校验码
             byte xor = BBC.getXor(xors);
             by[size] = xor;
-
             ctx.writeAndFlush(Unpooled.copiedBuffer(by));
         }
-
     }
 }
