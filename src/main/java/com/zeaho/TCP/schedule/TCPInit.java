@@ -5,34 +5,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.springframework.web.bind.annotation.RestController;
 
 @EnableScheduling  //定时任务
+@RestController
 public class TCPInit {
 
     @Value("${ip}")
-    static private String ip;
+    private String ip;
 
     @Value("${port}")
-    static private int port;
+    private int port;
 
     @Autowired
     private TCPService tcpService;
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 5000)
     public void init() {
         System.out.println("定时任务执行");
         try {
+            long l1 = System.currentTimeMillis();
             tcpService.init(ip, port);
-
-            tcpService.init(ip, port);
-            SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
-            System.out.println(df2.format(new Date()));// new Date()为获取当前系统时间
+            long l2 = System.currentTimeMillis();
+            System.out.println("耗时:" + (l2 - l1));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
 }
