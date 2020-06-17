@@ -1,7 +1,7 @@
-package com.zeaho.TCP.service.impl;
+package com.zeaho.TCP.domain.service.impl;
 
 import com.zeaho.TCP.domain.model.OpenApiShhkMachine;
-import com.zeaho.TCP.service.BytesService;
+import com.zeaho.TCP.domain.service.BytesService;
 import org.springframework.stereotype.Service;
 
 @Service

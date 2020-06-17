@@ -1,4 +1,4 @@
-package com.zeaho.TCP.service;
+package com.zeaho.TCP.domain.service;
 
 public interface TCPService {
 

@@ -1,7 +1,7 @@
-package com.zeaho.TCP.service.impl;
+package com.zeaho.TCP.domain.service.impl;
 
 import com.zeaho.TCP.handler.EchoHandler;
-import com.zeaho.TCP.service.TCPService;
+import com.zeaho.TCP.domain.service.TCPService;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;

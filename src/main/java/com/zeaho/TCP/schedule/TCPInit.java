@@ -1,17 +1,11 @@
 package com.zeaho.TCP.schedule;
 
-import com.zeaho.TCP.domain.model.OpenApiShhkMachine;
-import com.zeaho.TCP.domain.repo.OpenApiShhkMachineRepo;
-import com.zeaho.TCP.service.BytesService;
-import com.zeaho.TCP.service.TCPService;
+import com.zeaho.TCP.domain.service.TCPService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @EnableScheduling  //定时任务
 @RestController
