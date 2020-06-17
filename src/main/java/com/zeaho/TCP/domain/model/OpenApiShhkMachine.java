@@ -132,4 +132,27 @@ public class OpenApiShhkMachine extends AbstractModel {
     public void setMachineId(Long machineId) {
         this.machineId = machineId;
     }
+
+    @Override
+    public String toString() {
+        return "OpenApiShhkMachine{" +
+                "installAt=" + installAt +
+                ", deviceSn='" + deviceSn + '\'' +
+                ", sensorSn='" + sensorSn + '\'' +
+                ", environmentCode='" + environmentCode + '\'' +
+                ", emissionStandard='" + emissionStandard + '\'' +
+                ", category='" + category + '\'' +
+                ", brand='" + brand + '\'' +
+                ", machineModel='" + machineModel + '\'' +
+                ", machineCode='" + machineCode + '\'' +
+                ", ownerName='" + ownerName + '\'' +
+                ", ownerPhone='" + ownerPhone + '\'' +
+                ", deviceId=" + deviceId +
+                ", tenantId=" + tenantId +
+                ", machineId=" + machineId +
+                ", id=" + id +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }
