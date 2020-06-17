@@ -30,6 +30,10 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile('io.netty:netty-all:4.1.10.Final')
     runtime("mysql:mysql-connector-java")
+
+    // lombok
+    annotationProcessor('org.projectlombok:lombok:1.18.4')
+    compileOnly('org.projectlombok:lombok:1.18.4')
 }
 
 
