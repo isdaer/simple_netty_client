@@ -31,7 +31,7 @@ public class TCPInit {
 
     @Scheduled(fixedRate = 30000)//30秒
     public void init() {
-        MachineDataRealTime byMachineId = machineDataRealTimeRepo.findByMachineId(18593l);
+        MachineDataRealTime byMachineId = machineDataRealTimeRepo.findByMachineId(1l);
         System.out.println(byMachineId);
 
 

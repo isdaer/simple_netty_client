@@ -7,13 +7,13 @@ import javax.persistence.Id;
 
 @Entity
 @Data
-public class MachineDataRealTime {
+public class MachineLastLocation {
 
     @Id
     private Long machineId;
 
-    private String state;
+    private Double longitude;//精度
 
-    private Float fuelVolume;//油量
+    private Double latitude;//纬度
 
 }
