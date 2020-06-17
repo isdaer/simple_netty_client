@@ -1,6 +1,7 @@
 package com.zeaho.TCP.utils;
 
 import com.zeaho.TCP.domain.model.OpenApiShhkMachine;
+import com.zeaho.TCP.domain.repo.MachineDataRealTimeRepo;
 import com.zeaho.TCP.domain.repo.OpenApiShhkMachineRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,12 +18,16 @@ public class JointBytes {
     @Autowired
     private OpenApiShhkMachineRepo openApiShhkMachineRepo;
 
+    @Autowired
+    private MachineDataRealTimeRepo machineDataRealTimeRepo;
+
     private static JointBytes jointBytes;
 
     @PostConstruct
     public void init() {
         jointBytes = this;
         jointBytes.openApiShhkMachineRepo = this.openApiShhkMachineRepo;
+        jointBytes.machineDataRealTimeRepo = this.machineDataRealTimeRepo;
     }
 
     public ArrayList<Byte> JointBytes() {
