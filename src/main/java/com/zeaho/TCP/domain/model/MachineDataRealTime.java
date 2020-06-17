@@ -1,30 +1,22 @@
 package com.zeaho.TCP.domain.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import java.util.Date;
 
 @Entity
 public class MachineDataRealTime {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long machineId;
 
-    private String deviceSn;
-    private String sensorSn;
-    private String environmentCode;
-    private String emissionStandard;
-    private String category;
-    private String brand;
-    private String machineModel;
-    private String machineCode;
-    private String ownerName;
-    private String ownerPhone;
-    private Long deviceId;
-    private Long tenantId;
-    private Long machineId;
+    @Enumerated(EnumType.STRING)
+    private State state;//状态
+
+    private Float fuelVolume;//油量
+
+    private Long lastLocationId;//最后一次定位
+
 
 }
