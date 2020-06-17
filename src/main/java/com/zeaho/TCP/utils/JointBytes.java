@@ -1,8 +1,10 @@
 package com.zeaho.TCP.utils;
 
 import com.zeaho.TCP.domain.model.MachineDataRealTime;
+import com.zeaho.TCP.domain.model.MachineLastLocation;
 import com.zeaho.TCP.domain.model.OpenApiShhkMachine;
 import com.zeaho.TCP.domain.repo.MachineDataRealTimeRepo;
+import com.zeaho.TCP.domain.repo.MachineLastLocationRepo;
 import com.zeaho.TCP.domain.repo.OpenApiShhkMachineRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,9 @@ public class JointBytes {
     @Autowired
     private MachineDataRealTimeRepo machineDataRealTimeRepo;
 
+    @Autowired
+    private MachineLastLocationRepo machineLastLocationRepo;
+
     private static JointBytes jointBytes;
 
     @PostConstruct
@@ -29,6 +34,7 @@ public class JointBytes {
         jointBytes = this;
         jointBytes.openApiShhkMachineRepo = this.openApiShhkMachineRepo;
         jointBytes.machineDataRealTimeRepo = this.machineDataRealTimeRepo;
+        jointBytes.machineLastLocationRepo = this.machineLastLocationRepo;
     }
 
     public ArrayList<Byte> JointBytes() {
@@ -56,6 +62,9 @@ public class JointBytes {
         String state = mdtr.getState();//状态
         Float fuelVolume = mdtr.getFuelVolume();//油量
 
+        MachineLastLocation mll = jointBytes.machineLastLocationRepo.findByMachineId(machineId);
+        Double longitude = mll.getLongitude();//精度
+        Double latitude = mll.getLatitude();//纬度
 
         //起始符
         //固定
