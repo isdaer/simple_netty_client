@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
+//核心业务工具类
 //返回ArrayList<Byte>类型的最终传入数据
 //工具类调用repo
 @Component
@@ -62,9 +63,13 @@ public class JointBytes {
         String state = mdtr.getState();//状态
         Float fuelVolume = mdtr.getFuelVolume();//油量
 
+        Boolean locationState = false;
         MachineLastLocation mll = jointBytes.machineLastLocationRepo.findByMachineId(machineId);
-        Double longitude = mll.getLongitude();//精度
-        Double latitude = mll.getLatitude();//纬度
+        if (mll != null) {
+            locationState = true;
+            Double longitude = mll.getLongitude();//精度
+            Double latitude = mll.getLatitude();//纬度
+        }
 
         //起始符
         //固定
