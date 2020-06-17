@@ -1,17 +1,14 @@
 package com.zeaho.TCP.handler;
 
-import com.zeaho.TCP.domain.model.OpenApiShhkMachine;
 import com.zeaho.TCP.domain.repo.OpenApiShhkMachineRepo;
 import com.zeaho.TCP.utils.BBC;
 import com.zeaho.TCP.utils.JointBytes;
-import com.zeaho.TCP.utils.StringIntoBytes;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class EchoHandler extends ChannelInboundHandlerAdapter {
 
@@ -91,7 +88,8 @@ public class EchoHandler extends ChannelInboundHandlerAdapter {
 //            bytes.add(b);
 //        }
 
-        ArrayList<Byte> bytes = JointBytes.JointBytes();
+        JointBytes jointBytes = new JointBytes();
+        ArrayList<Byte> bytes = jointBytes.JointBytes();
 
         //结果转换
         int size = bytes.size();
@@ -111,5 +109,6 @@ public class EchoHandler extends ChannelInboundHandlerAdapter {
 
         ctx.writeAndFlush(Unpooled.copiedBuffer(by));
     }
+
 
 }
