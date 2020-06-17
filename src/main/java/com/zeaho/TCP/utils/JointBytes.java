@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,50 +44,26 @@ public class JointBytes {
         jointBytes.machineLastLocationRepo = this.machineLastLocationRepo;
     }
 
-    public ArrayList<Byte> JointBytes() {
-        ArrayList<Byte> bytes = new ArrayList<>();
-        List<OpenApiShhkMachine> list = jointBytes.openApiShhkMachineRepo.findAll();
+    public ArrayList<ArrayList<Byte>> JointBytes() {
+        ArrayList<ArrayList<Byte>> resultLists = new ArrayList<>();
 
+        List<OpenApiShhkMachine> list = jointBytes.openApiShhkMachineRepo.findAll();
         for (OpenApiShhkMachine oasm : list) {
             String machineCode = oasm.getMachineCode();
             Long machineId = oasm.getMachineId();
-            if (!"".equals(machineCode) && machineCode != null
-                    && !"".equals(machineId) && machineId != null) {//设备编号和机械id不为空
-                bytes = eachByte(bytes, machineCode, machineId);
-            }
 
+            if (!"".equals(machineCode) && machineCode != null && !"".equals(machineId) && machineId != null) {//设备编号和机械id不为空
+                resultLists = eachByte(resultLists, machineCode, machineId);
+            }
         }
-        return bytes;
+        return resultLists;
     }
 
-    private ArrayList<Byte> eachByte(ArrayList<Byte> bytes, String machineCode, Long machineId) {
+    private ArrayList<ArrayList<Byte>> eachByte(ArrayList<ArrayList<Byte>> resultLists, String machineCode, Long machineId) {
+        ArrayList<Byte> bytes = new ArrayList<>();
         MachineDataRealTime mdtr = jointBytes.machineDataRealTimeRepo.findByMachineId(machineId);
         if (mdtr == null) {//没有实时状态,不拼接
-            return bytes;
-        }
-
-        String state = mdtr.getState();//状态
-        int fuelPercentage = (int) mdtr.getFuelPercentage();//油量百分比
-
-        //获取年月日时分秒
-        int stateUpdateTs = mdtr.getStateUpdateTs();
-        System.out.println(stateUpdateTs);
-        Date date = new Date(stateUpdateTs * 1000l);
-        Calendar ca = Calendar.getInstance();
-        ca.setTime(date);
-        int year = ca.get(Calendar.YEAR);
-        int month = ca.get(Calendar.MONTH) + 1;
-        int day = ca.get(Calendar.DAY_OF_MONTH);
-        int hour = ca.get(Calendar.HOUR);
-        int minute = ca.get(Calendar.MINUTE);
-        int second = ca.get(Calendar.SECOND);
-
-        Boolean locationState = false;
-        MachineLastLocation mll = jointBytes.machineLastLocationRepo.findByMachineId(machineId);
-        if (mll != null) {
-            locationState = true;
-            Double longitude = mll.getLongitude();//精度
-            Double latitude = mll.getLatitude();//纬度
+            return resultLists;
         }
 
         //起始符
@@ -96,6 +76,10 @@ public class JointBytes {
         bytes.add((byte) 0x02);
 
         //车辆识别号
+        int length = machineCode.length();
+        if (length < 17) {
+            String str = String.format("%0" + (17 - length) + "d", machineCode);
+        }
         StringIntoBytes.intoBytes(bytes, machineCode);
 
         //终端软件版本号,有效范围0~255
@@ -109,23 +93,57 @@ public class JointBytes {
         //先拼接数据单元,再计算数据单元长度追加至总数据,再追加数据单元
         ArrayList<Byte> addBytes = new ArrayList<>();
         //数据采集时间
-        addBytes.add((byte) year);//年
-        addBytes.add((byte) month);//月
-        addBytes.add((byte) day);//日
-        addBytes.add((byte) hour);//时
-        addBytes.add((byte) minute);//分
-        addBytes.add((byte) second);//秒
+        //获取年月日时分秒
+        int stateUpdateTs = mdtr.getStateUpdateTs();
+        Date date = new Date(stateUpdateTs * 1000l);
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(date);
+        addBytes.add((byte) ca.get(Calendar.YEAR));//年
+        addBytes.add((byte) (ca.get(Calendar.MONTH) + 1));//月
+        addBytes.add((byte) ca.get(Calendar.DAY_OF_MONTH));//日
+        addBytes.add((byte) ca.get(Calendar.HOUR));//时
+        addBytes.add((byte) ca.get(Calendar.MINUTE));//分
+        addBytes.add((byte) ca.get(Calendar.SECOND));//秒
+
         //信息类型标志
         //0x02国四及以上,0x87国三及以下
         addBytes.add((byte) 0x87);//国三及以下数据流
+
         //信息流水号,以天为单位,每次加1
+        File file = new File("count.txt");
+        List<String> strings = null;
+        try {
+            strings = Files.readAllLines(Paths.get(file.toURI()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String strCount = strings.get(0);
+        int count = Integer.parseInt(strCount);
         addBytes.add((byte) 0);
-        addBytes.add((byte) 1);
+        addBytes.add((byte) 17);
+
         /**------------信息体------------*/
         //油箱液位,百分比
+        int fuelPercentage = (int) mdtr.getFuelPercentage();//油量百分比
         addBytes.add((byte) fuelPercentage);
+
+        Boolean locationState = false;
+        MachineLastLocation mll = jointBytes.machineLastLocationRepo.findByMachineId(machineId);
+        if (mll != null) {
+            System.out.println("---------");
+            locationState = true;
+            Float longitude = (float) mll.getLongitude();//精度
+            byte[] bytes1 = ByteUtils.float2byte(longitude);
+            for (byte b : bytes1
+            ) {
+                System.out.println(b);
+            }
+            Float latitude = (float) mll.getLatitude();//纬度
+        }
+        System.out.println("---------");
         //定位状态
         addBytes.add((byte) 0);
+
         //精度
         addBytes.add((byte) 0x42);
         addBytes.add((byte) 0xF3);
@@ -136,9 +154,21 @@ public class JointBytes {
         addBytes.add((byte) 0xF7);
         addBytes.add((byte) 0xfb);
         addBytes.add((byte) 0x0B);
+
         //工作状态
         //0x00:停止,0x01:怠速,0x02:工作,0x03:行驶,0x37:行程开始,0x38:行程结果
-        addBytes.add((byte) 0x02);
+        String state = mdtr.getState();//状态
+        switch (state) {
+            case "working":
+                addBytes.add((byte) 0x02);
+                break;
+            case "idle":
+                addBytes.add((byte) 0x01);
+            default:
+                addBytes.add((byte) 0x00);
+                break;
+        }
+
         /**------------信息体------------*/
         /**----------------------拼接数据----------------------*/
 

@@ -12,8 +12,8 @@ public class MachineLastLocation {
     @Id
     private Long machineId;
 
-    private Double longitude;//精度
+    private double longitude;//精度
 
-    private Double latitude;//纬度
+    private double latitude;//纬度
 
 }

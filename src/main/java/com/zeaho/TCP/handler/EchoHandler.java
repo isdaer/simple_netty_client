@@ -15,24 +15,27 @@ public class EchoHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
         JointBytes jointBytes = new JointBytes();
-        ArrayList<Byte> bytes = jointBytes.JointBytes();
+        ArrayList<ArrayList<Byte>> arrayLists = jointBytes.JointBytes();
+        for (ArrayList<Byte> bytes : arrayLists) {
 
-        //结果转换
-        int size = bytes.size();
-        byte[] by = new byte[size + 1];//多一位用于存储BBC
-        byte[] xors = new byte[size - 2];//去除前两位计算BCC
+            //结果转换
+            int size = bytes.size();
+            byte[] by = new byte[size + 1];//多一位用于存储BBC
+            byte[] xors = new byte[size - 2];//去除前两位计算BCC
 
-        for (int i = 0; i < size; i++) {
-            if (i > 1) {
-                xors[i - 2] = bytes.get(i);
+            for (int i = 0; i < size; i++) {
+                if (i > 1) {
+                    xors[i - 2] = bytes.get(i);
+                }
+                by[i] = bytes.get(i);
             }
-            by[i] = bytes.get(i);
+
+            //校验码
+            byte xor = BBC.getXor(xors);
+            by[size] = xor;
+
+            ctx.writeAndFlush(Unpooled.copiedBuffer(by));
         }
 
-        //校验码
-        byte xor = BBC.getXor(xors);
-        by[size] = xor;
-
-        ctx.writeAndFlush(Unpooled.copiedBuffer(by));
     }
 }

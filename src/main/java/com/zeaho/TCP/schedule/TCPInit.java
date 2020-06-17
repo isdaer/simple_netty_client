@@ -7,12 +7,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 
 @EnableScheduling  //定时任务
 @RestController
@@ -27,12 +26,12 @@ public class TCPInit {
     @Autowired
     private TCPService tcpService;
 
-    @Scheduled(fixedRate = 1000)//30秒
+    @Scheduled(fixedRate = 30000)//30秒
     public void init() {
+        //创建txt记录流水号,定时任务12点删除
         try {
-
             File file = new File("count.txt");
-            if (!file.exists()) {
+            if (!file.exists()) {//文件不存在,当天第一次,默认为1
                 file.createNewFile();
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 fileOutputStream.write("1".getBytes());
@@ -43,7 +42,6 @@ public class TCPInit {
                 List<String> strings = Files.readAllLines(Paths.get(file.toURI()));
                 String strCount = strings.get(0);
                 int count = Integer.parseInt(strCount);
-                System.out.println(count);
                 count = count + 1;
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 fileOutputStream.write(("" + count).getBytes());
@@ -53,19 +51,14 @@ public class TCPInit {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        System.out.println("定时任务执行");
+        try {
+            tcpService.init(ip, port);
+        } catch (
+                InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-
-
-//        System.out.println("定时任务执行");
-//        try
-//
-//    {
-//        tcpService.init(ip, port);
-//    } catch(
-//    InterruptedException e)
-//
-//    {
-//        e.printStackTrace();
-//    }
 }
 
