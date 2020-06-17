@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class CountFileUtil {
-    public static void updateCountFile() {
+    public static int updateCountFile() {
         //创建txt记录流水号,定时任务12点删除
         try {
             File file = new File("count.txt");
@@ -17,6 +17,7 @@ public class CountFileUtil {
                 fileOutputStream.write("1".getBytes());
                 fileOutputStream.flush();
                 fileOutputStream.close();
+                return 1;
             } else {
                 //不是第一次,读取文件中的计数
                 List<String> strings = Files.readAllLines(Paths.get(file.toURI()));
@@ -27,9 +28,11 @@ public class CountFileUtil {
                 fileOutputStream.write(("" + count).getBytes());
                 fileOutputStream.flush();
                 fileOutputStream.close();
+                return count;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return 0;
         }
     }
 }

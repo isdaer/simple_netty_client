@@ -5,18 +5,14 @@ import com.zeaho.TCP.domain.model.MachineLastLocation;
 import com.zeaho.TCP.domain.repo.MachineDataRealTimeRepo;
 import com.zeaho.TCP.domain.repo.MachineLastLocationRepo;
 import com.zeaho.TCP.utils.BytesUtil;
+import com.zeaho.TCP.utils.CountFileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 //核心业务协议类
 //返回ArrayList<Byte>类型的最终传入数据
@@ -94,21 +90,15 @@ public class TCPBytes {
         addBytes.add((byte) 0x87);//国三及以下数据流
 
         //信息流水号,以天为单位,每次加1
-        File file = new File("count.txt");
-        List<String> strings = null;
-        try {
-            strings = Files.readAllLines(Paths.get(file.toURI()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String strCount = strings.get(0);
-        int count = Integer.parseInt(strCount);
+        int count = CountFileUtil.updateCountFile();
+        System.out.println("count:" + count);
         addBytes.add((byte) 0);
         addBytes.add((byte) 17);
 
         /**------------信息体------------*/
         //油箱液位,百分比
-        int fuelPercentage = (int) mdtr.getFuelPercentage();//油量百分比
+        System.out.println(mdtr.getFuelPercentage() * 100);
+        int fuelPercentage = (int) (mdtr.getFuelPercentage() * 100);//油量百分比
         addBytes.add((byte) fuelPercentage);
 
         //定位状态
