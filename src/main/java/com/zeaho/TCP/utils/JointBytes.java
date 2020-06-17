@@ -63,7 +63,7 @@ public class JointBytes {
         }
 
         String state = mdtr.getState();//状态
-        int fuelVolume = (int) mdtr.getFuelVolume();//油量
+        int fuelPercentage = (int) mdtr.getFuelPercentage();//油量百分比
 
         //获取年月日时分秒
         int stateUpdateTs = mdtr.getStateUpdateTs();
@@ -118,12 +118,12 @@ public class JointBytes {
         //信息类型标志
         //0x02国四及以上,0x87国三及以下
         addBytes.add((byte) 0x87);//国三及以下数据流
-        //信息流水号
+        //信息流水号,以天为单位,每次加1
         addBytes.add((byte) 0);
         addBytes.add((byte) 1);
         /**------------信息体------------*/
-        //油箱液位
-        addBytes.add((byte) fuelVolume);
+        //油箱液位,百分比
+        addBytes.add((byte) fuelPercentage);
         //定位状态
         addBytes.add((byte) 0);
         //精度
@@ -137,6 +137,7 @@ public class JointBytes {
         addBytes.add((byte) 0xfb);
         addBytes.add((byte) 0x0B);
         //工作状态
+        //0x00:停止,0x01:怠速,0x02:工作,0x03:行驶,0x37:行程开始,0x38:行程结果
         addBytes.add((byte) 0x02);
         /**------------信息体------------*/
         /**----------------------拼接数据----------------------*/
