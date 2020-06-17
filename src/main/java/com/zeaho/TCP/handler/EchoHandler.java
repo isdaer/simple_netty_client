@@ -1,18 +1,28 @@
 package com.zeaho.TCP.handler;
 
+import com.zeaho.TCP.domain.model.OpenApiShhkMachine;
+import com.zeaho.TCP.domain.repo.OpenApiShhkMachineRepo;
 import com.zeaho.TCP.utils.BBC;
 import com.zeaho.TCP.utils.StringIntoBytes;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EchoHandler extends ChannelInboundHandlerAdapter {
+
+
+    @Autowired
+    private OpenApiShhkMachineRepo openApiShhkMachineRepo;
 
     //连接成功后发送消息
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+
+this.getBytes();
 
         ArrayList<Byte> bytes = new ArrayList<>();
 
@@ -99,5 +109,20 @@ public class EchoHandler extends ChannelInboundHandlerAdapter {
         by[size] = xor;
 
         ctx.writeAndFlush(Unpooled.copiedBuffer(by));
+    }
+
+    private void getBytes() {
+        List<OpenApiShhkMachine> list = openApiShhkMachineRepo.findAll();
+        ArrayList<Byte> bytes = new ArrayList<>();//
+        for (OpenApiShhkMachine oasm : list) {
+            String machineCode = oasm.getMachineCode();
+            if (!"".equals(machineCode) && machineCode != null) {//设备编号不为空
+                System.out.println(machineCode);
+                //拼接数据包,一次传输
+               // byte[] bytes = bytesService.getBytes(oasm);
+
+            }
+
+        }
     }
 }

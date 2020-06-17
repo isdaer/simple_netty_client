@@ -1,6 +1,8 @@
 package com.zeaho.TCP.service;
 
+import com.zeaho.TCP.domain.model.OpenApiShhkMachine;
+
 public interface BytesService {
 
-    public void getBytes(String ip, int port);
+    public byte[] getBytes(OpenApiShhkMachine oasm);
 }
