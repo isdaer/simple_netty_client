@@ -2,6 +2,7 @@
 ._log
 /build/
 !gradle/wrapper/gradle-wrapper.jar
+count.txt
 
 ### STS ###
 .apt_generated
