@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 //核心业务工具类
@@ -62,6 +64,19 @@ public class JointBytes {
 
         String state = mdtr.getState();//状态
         Float fuelVolume = mdtr.getFuelVolume();//油量
+
+        //获取年月日时分秒
+        int stateUpdateTs = mdtr.getStateUpdateTs();
+        System.out.println(stateUpdateTs);
+        Date date = new Date(stateUpdateTs * 1000l);
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(date);
+        int year = ca.get(Calendar.YEAR);
+        int month = ca.get(Calendar.MONTH) + 1;
+        int day = ca.get(Calendar.DAY_OF_MONTH);
+        int hour = ca.get(Calendar.HOUR);
+        int minute = ca.get(Calendar.MINUTE);
+        int second = ca.get(Calendar.SECOND);
 
         Boolean locationState = false;
         MachineLastLocation mll = jointBytes.machineLastLocationRepo.findByMachineId(machineId);

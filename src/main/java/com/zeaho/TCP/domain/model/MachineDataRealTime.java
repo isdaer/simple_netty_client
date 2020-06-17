@@ -16,6 +16,6 @@ public class MachineDataRealTime {
 
     private Float fuelVolume;//油量
 
-    private Integer stateUpdateTs;//状态修改时间
+    private int stateUpdateTs;//状态修改时间
 
 }
