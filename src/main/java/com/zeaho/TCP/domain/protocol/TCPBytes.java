@@ -112,32 +112,43 @@ public class TCPBytes {
 
         /**------------信息体------------*/
         //油箱液位,百分比
-        System.out.println(mdtr.getFuelPercentage() * 100);
         int fuelPercentage = (int) (mdtr.getFuelPercentage() * 100);//油量百分比
         addBytes.add((byte) fuelPercentage);
 
         //定位状态
-        boolean locationState = false;
         MachineLastLocation mll = tcpBytes.machineLastLocationRepo.findByMachineId(machineId);
         if (mll != null) {
-            locationState = true;
+            //定位状态
+            addBytes.add((byte) 0);
             Float longitude = (float) mll.getLongitude();//精度
             Float latitude = (float) mll.getLatitude();//纬度
+            System.out.println(longitude);
+            System.out.println(latitude);
+            byte[] longitudeBytes = BytesUtil.float2byte(longitude);
+            for (byte lon : longitudeBytes) {
+                addBytes.add(lon);
+            }
+            byte[] latitudeBytes = BytesUtil.float2byte(latitude);
+            for (byte lat : longitudeBytes) {
+                addBytes.add(lat);
+            }
 
+        }else {
+            //定位状态
+            addBytes.add((byte) 1);
+
+            //精度
+            addBytes.add((byte) 0x0);
+            addBytes.add((byte) 0x0);
+            addBytes.add((byte) 0x0);
+            addBytes.add((byte) 0x0);
+            //纬度
+            addBytes.add((byte) 0x0);
+            addBytes.add((byte) 0x0);
+            addBytes.add((byte) 0x0);
+            addBytes.add((byte) 0x0);
         }
-        //定位状态
-        addBytes.add((byte) 0);
 
-        //精度
-        addBytes.add((byte) 0x42);
-        addBytes.add((byte) 0xF3);
-        addBytes.add((byte) 0x0C);
-        addBytes.add((byte) 0x4A);
-        //纬度
-        addBytes.add((byte) 0x41);
-        addBytes.add((byte) 0xF7);
-        addBytes.add((byte) 0xfb);
-        addBytes.add((byte) 0x0B);
 
         //工作状态
         //0x00:停止,0x01:怠速,0x02:工作,0x03:行驶,0x37:行程开始,0x38:行程结果
