@@ -123,6 +123,7 @@ public class TCPBytes {
             locationState = true;
             Float longitude = (float) mll.getLongitude();//精度
             Float latitude = (float) mll.getLatitude();//纬度
+
         }
         //定位状态
         addBytes.add((byte) 0);
