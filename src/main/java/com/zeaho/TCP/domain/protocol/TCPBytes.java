@@ -5,8 +5,9 @@ import com.zeaho.TCP.domain.model.MachineLastLocation;
 import com.zeaho.TCP.domain.repo.MachineDataRealTimeRepo;
 import com.zeaho.TCP.domain.repo.MachineLastLocationRepo;
 import com.zeaho.TCP.utils.BytesUtil;
-import com.zeaho.TCP.utils.CountFileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -27,11 +28,15 @@ public class TCPBytes {
     @Autowired
     private MachineLastLocationRepo machineLastLocationRepo;
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
     @PostConstruct
     public void init() {
         tcpBytes = this;
         tcpBytes.machineDataRealTimeRepo = this.machineDataRealTimeRepo;
         tcpBytes.machineLastLocationRepo = this.machineLastLocationRepo;
+        tcpBytes.stringRedisTemplate = stringRedisTemplate;
     }
 
     public ArrayList<Byte> JointBytes(String machineCode, Long machineId) {
@@ -90,10 +95,20 @@ public class TCPBytes {
         addBytes.add((byte) 0x87);//国三及以下数据流
 
         //信息流水号,以天为单位,每次加1
-        int count = CountFileUtil.updateCountFile();
-        System.out.println("count:" + count);
-        addBytes.add((byte) 0);
-        addBytes.add((byte) 17);
+        int count = 1;
+        ValueOperations<String, String> stvos = tcpBytes.stringRedisTemplate.opsForValue();
+        String strCount = stvos.get("count");
+        if (strCount == null | "0".equals(strCount)) {
+            stvos.set("count", "1");
+        } else {
+            count = Integer.parseInt(strCount);
+            stvos.set("count", "" + (count + 1));
+        }
+        int currentInt = Integer.parseInt(stvos.get("count"));
+        int[] ints = BytesUtil.int2bytes(currentInt, 2);
+        for (int i = 0; i < 2; i++) {
+            addBytes.add((byte) ints[i]);
+        }
 
         /**------------信息体------------*/
         //油箱液位,百分比
