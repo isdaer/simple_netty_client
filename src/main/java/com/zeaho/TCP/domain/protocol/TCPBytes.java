@@ -11,9 +11,11 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 //核心业务协议类
 //返回ArrayList<Byte>类型的最终传入数据
@@ -46,8 +48,7 @@ public class TCPBytes {
             return null;
         }
 
-        //起始符
-        //固定
+        //固定起始符
         String header = "##";
         BytesUtil.stringIntoBytes(bytes, header);
 
@@ -83,7 +84,8 @@ public class TCPBytes {
         Date date = new Date(stateUpdateTs * 1000l);
         Calendar ca = Calendar.getInstance();
         ca.setTime(date);
-        addBytes.add((byte) ca.get(Calendar.YEAR));//年
+        int year = Integer.parseInt(new SimpleDateFormat("yy", Locale.CHINESE).format(ca.getTime()));//年取后两位
+        addBytes.add((byte) year);//年
         addBytes.add((byte) (ca.get(Calendar.MONTH) + 1));//月
         addBytes.add((byte) ca.get(Calendar.DAY_OF_MONTH));//日
         addBytes.add((byte) ca.get(Calendar.HOUR));//时
@@ -122,18 +124,20 @@ public class TCPBytes {
             addBytes.add((byte) 0);
             Float longitude = (float) mll.getLongitude();//精度
             Float latitude = (float) mll.getLatitude();//纬度
-            System.out.println(longitude);
-            System.out.println(latitude);
-            byte[] longitudeBytes = BytesUtil.float2byte(longitude);
-            for (byte lon : longitudeBytes) {
-                addBytes.add(lon);
+            int intLon = (int) (longitude * 100000);
+            int intLat = (int) (latitude * 100000);
+            int[] lonBytes = BytesUtil.int2bytes(intLon, 4);
+            int[] latBytes = BytesUtil.int2bytes(intLat, 4);
+            //byte[] longitudeBytes = BytesUtil.float2byte(longitude);
+            for (int lon : lonBytes) {
+                addBytes.add((byte) lon);
             }
-            byte[] latitudeBytes = BytesUtil.float2byte(latitude);
-            for (byte lat : longitudeBytes) {
-                addBytes.add(lat);
+            // byte[] latitudeBytes = BytesUtil.float2byte(latitude);
+            for (int lat : latBytes) {
+                addBytes.add((byte) lat);
             }
 
-        }else {
+        } else {
             //定位状态
             addBytes.add((byte) 1);
 

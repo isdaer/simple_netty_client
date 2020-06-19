@@ -4,9 +4,15 @@ import java.util.ArrayList;
 
 /**
  * @author chen
+ * 字节工具类
  */
-//将传入的字符串转化为字节追加进传入的字节数组
 public class BytesUtil {
+    /**
+     * 将传入的字符串转化为字节追加进传入的字节数组
+     *
+     * @param bytes
+     * @param s
+     */
     public static void stringIntoBytes(ArrayList<Byte> bytes, String s) {
         char[] chars = s.toCharArray();
         for (char c : chars) {
@@ -16,9 +22,10 @@ public class BytesUtil {
 
     /**
      * 将int类型数据转换为指定个数的字节数组
+     * 返回符合int大小范围的int值,将返回的值强转使用
      *
      * @param number:指定原数据
-     * @param count:指定字节数
+     * @param count:指定数组大小
      * @return
      */
     public static int[] int2bytes(int number, int count) {
@@ -43,10 +50,10 @@ public class BytesUtil {
     }
 
     /**
-     * 将指定字符串按指定大小分割
+     * 将字符串按指定大小分割
      *
-     * @param str:分割字符串
-     * @param count:分割大小
+     * @param str:字符串
+     * @param count:分割后每一节大小
      * @return
      */
     public static String[] splitStringByCount(String str, int count) {
@@ -78,39 +85,4 @@ public class BytesUtil {
             return strings;
         }
     }
-
-    /**
-     * 浮点转换为字节
-     *
-     * @param f
-     * @return
-     */
-    public static byte[] float2byte(float f) {
-
-        // 把float转换为byte[]
-        int fbit = Float.floatToIntBits(f);
-
-        byte[] b = new byte[4];
-        for (int i = 0; i < 4; i++) {
-            b[i] = (byte) (fbit >> (24 - i * 8));
-        }
-
-        // 翻转数组
-        int len = b.length;
-        // 建立一个与源数组元素类型相同的数组
-        byte[] dest = new byte[len];
-        // 为了防止修改源数组，将源数组拷贝一份副本
-        System.arraycopy(b, 0, dest, 0, len);
-        byte temp;
-        // 将顺位第i个与倒数第i个交换
-        for (int i = 0; i < len / 2; ++i) {
-            temp = dest[i];
-            dest[i] = dest[len - i - 1];
-            dest[len - i - 1] = temp;
-        }
-
-        return dest;
-
-    }
-
 }
