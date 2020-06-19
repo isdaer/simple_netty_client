@@ -124,8 +124,8 @@ public class TCPBytes {
             addBytes.add((byte) 0);
             Float longitude = (float) mll.getLongitude();//精度
             Float latitude = (float) mll.getLatitude();//纬度
-            int intLon = (int) (longitude * 100000);
-            int intLat = (int) (latitude * 100000);
+            int intLon = (int) (longitude * 1000000);
+            int intLat = (int) (latitude * 1000000);
             int[] lonBytes = BytesUtil.int2bytes(intLon, 4);
             int[] latBytes = BytesUtil.int2bytes(intLat, 4);
             for (int lon : lonBytes) {

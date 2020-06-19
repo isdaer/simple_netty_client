@@ -29,7 +29,7 @@ public class TCPInit {
     private OpenApiShhkMachineRepo openApiShhkMachineRepo;
 
     @Async
-    @Scheduled(fixedRate = 3000)//30秒
+    @Scheduled(fixedRate = 30000)//30秒
     public void init() {
         System.out.println("定时任务执行");
         List<OpenApiShhkMachine> list = openApiShhkMachineRepo.findAll();
