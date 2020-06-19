@@ -128,11 +128,9 @@ public class TCPBytes {
             int intLat = (int) (latitude * 100000);
             int[] lonBytes = BytesUtil.int2bytes(intLon, 4);
             int[] latBytes = BytesUtil.int2bytes(intLat, 4);
-            //byte[] longitudeBytes = BytesUtil.float2byte(longitude);
             for (int lon : lonBytes) {
                 addBytes.add((byte) lon);
             }
-            // byte[] latitudeBytes = BytesUtil.float2byte(latitude);
             for (int lat : latBytes) {
                 addBytes.add((byte) lat);
             }
@@ -152,7 +150,6 @@ public class TCPBytes {
             addBytes.add((byte) 0x0);
             addBytes.add((byte) 0x0);
         }
-
 
         //工作状态
         //0x00:停止,0x01:怠速,0x02:工作,0x03:行驶,0x37:行程开始,0x38:行程结果

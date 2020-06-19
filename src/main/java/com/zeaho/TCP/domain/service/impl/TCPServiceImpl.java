@@ -1,6 +1,5 @@
 package com.zeaho.TCP.domain.service.impl;
 
-import com.zeaho.TCP.domain.model.OpenApiShhkMachine;
 import com.zeaho.TCP.domain.service.TCPService;
 import com.zeaho.TCP.handler.EchoHandler;
 import io.netty.bootstrap.Bootstrap;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class TCPServiceImpl implements TCPService {
 
     @Override
-    public void init(String ip, int port, String machineCode,Long machineId) throws InterruptedException {
+    public void init(String ip, int port, String machineCode, Long machineId) throws InterruptedException {
         NioEventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap bootstrap = new Bootstrap();
@@ -28,7 +27,7 @@ public class TCPServiceImpl implements TCPService {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
                             ch.pipeline().addLast("logging", new LoggingHandler("DEBUG"));
-                            ch.pipeline().addLast(new EchoHandler(machineCode,machineId));
+                            ch.pipeline().addLast(new EchoHandler(machineCode, machineId));
                         }
                     });
 
