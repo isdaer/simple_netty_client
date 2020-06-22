@@ -80,15 +80,12 @@ public class TCPBytes {
         ArrayList<Byte> addBytes = new ArrayList<>();
         //数据采集时间
         //获取年月日时分秒
-        int stateUpdateTs = mdtr.getStateUpdateTs();
-        Date date = new Date(stateUpdateTs * 1000l);
         Calendar ca = Calendar.getInstance();
-        ca.setTime(date);
         int year = Integer.parseInt(new SimpleDateFormat("yy", Locale.CHINESE).format(ca.getTime()));//年取后两位
         addBytes.add((byte) year);//年
         addBytes.add((byte) (ca.get(Calendar.MONTH) + 1));//月
         addBytes.add((byte) ca.get(Calendar.DAY_OF_MONTH));//日
-        addBytes.add((byte) ca.get(Calendar.HOUR));//时
+        addBytes.add((byte) ca.get(Calendar.HOUR_OF_DAY));//时
         addBytes.add((byte) ca.get(Calendar.MINUTE));//分
         addBytes.add((byte) ca.get(Calendar.SECOND));//秒
 
@@ -124,8 +121,8 @@ public class TCPBytes {
             addBytes.add((byte) 0);
             Float longitude = (float) mll.getLongitude();//精度
             Float latitude = (float) mll.getLatitude();//纬度
-            int intLon = (int) (longitude * 1000000);
-            int intLat = (int) (latitude * 1000000);
+            int intLon = (int) (longitude * 100000);
+            int intLat = (int) (latitude * 100000);
             int[] lonBytes = BytesUtil.int2bytes(intLon, 4);
             int[] latBytes = BytesUtil.int2bytes(intLat, 4);
             for (int lon : lonBytes) {
